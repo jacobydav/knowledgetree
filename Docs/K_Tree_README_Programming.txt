@@ -13,3 +13,18 @@ Now you can run the program from within Thonny.
 
 //To run the program from the terminal with the virtual environment activated
 python k_tree.py
+
+//Git procedure
+git add .
+git commit -m "Commit message goes here"
+git push
+
+//SystemD service
+The file is /lib/systemd/system/knowledgetree.service
+Example commands:
+sudo systemctl enable knowledgetree
+sudo systemctl start knowledgetree
+sudo systemctl status knowledgetree
+sudo systemctl stop knowledgetree
+sudo systemctl disable knowledgetree
+sudo systemctl daemon-reload

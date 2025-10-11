@@ -6,15 +6,20 @@ sudo apt install build-essential cmake git libgtk-3-dev libavcodec-dev libavform
 //Install the python virtual environment
 sudo apt install python3-venv
 //Create the virtual environment by navigating to the python project folder and running:
-python3 -m venv .venv
+python -m venv virenv
 
 //To install OpenCV in the virtual environment:
 //Activate your virtual environment by running:
-source .venv/bin/activate
+source virenv/bin/activate
 
 //The prompt will change. You will see (.venv) at the beginning of the prompt in the terminal.
 //Now Install opencv while the virtual environment is active
 pip install opencv-python
+pip install pygame
+pip install gpiozero
+pip install lgpio
+
+//Note: Use the "deactivate" command to exit the virtual environment
 //Initial setup end
 
 //Programming and testing
@@ -30,3 +35,9 @@ Now you can run the program from within Thonny.
 
 //To run the program from the terminal with the virtual environment activated
 python k_tree.py
+
+//Resources
+https://gpiozero.readthedocs.io/en/stable/recipes.html
+https://www.raspberrypi.com/documentation/computers/os.html
+https://www.jeffgeerling.com/blog/2022/playing-sounds-python-on-raspberry-pi
+https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
