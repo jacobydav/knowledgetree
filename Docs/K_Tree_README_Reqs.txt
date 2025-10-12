@@ -8,11 +8,15 @@ sudo apt install python3-venv
 //Create the virtual environment by navigating to the python project folder and running:
 python -m venv virenv
 
-//To install OpenCV in the virtual environment:
 //Activate your virtual environment by running:
 source virenv/bin/activate
+//The prompt will change. You will see (virenv) at the beginning of the prompt in the terminal.
 
-//The prompt will change. You will see (.venv) at the beginning of the prompt in the terminal.
+//Install some opencv dependencies
+sudo apt install build-essential cmake git libgtk-3-dev libavcodec-dev libavformat-dev libswscale-dev
+
+//To install OpenCV in the virtual environment:
+
 //Now Install opencv while the virtual environment is active
 pip install opencv-python
 pip install pygame
