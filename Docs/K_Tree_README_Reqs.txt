@@ -45,3 +45,4 @@ https://gpiozero.readthedocs.io/en/stable/recipes.html
 https://www.raspberrypi.com/documentation/computers/os.html
 https://www.jeffgeerling.com/blog/2022/playing-sounds-python-on-raspberry-pi
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
+https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/bindings/python/examples
