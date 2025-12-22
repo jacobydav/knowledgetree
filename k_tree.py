@@ -4,13 +4,13 @@ import time
 import random
 from gpiod.line import Direction
 from gpiod.line import Bias,Edge,Value
-
+import glob
 import pygame
 import cv2
 import numpy as np
- 
+
 # Initialize video capture
-capture = cv2.VideoCapture(0)
+capture = cv2.VideoCapture(-1)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
 capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 576)
 capture.set(cv2.CAP_PROP_FPS, 30)  # Requesting 30 FPS from the camera
@@ -89,14 +89,24 @@ def detect_candy():
         # draw the min area react in red
         cv2.drawContours(frame, [box], 0, (0,0,255), 2)
         #Classify the candy
+        sound = pygame.mixer.Sound('/home/rpi/Documents/knowledgetree/sounds/unidentified/cctf.wav')
         if blobArea>3800 and blobArea<5000 and blobAspect>0.5: #Starburst
             print("Starburst")
+            if mode == "normal":
+                play_sound_from_file('/home/rpi/Documents/knowledgetree/sounds/starburst/starburst.wav')
         elif blobArea>6000 and blobArea<12000 and blobAspect<0.5: #Smartie
             print("Smartie")
+            if mode == "normal":
+                play_sound_from_file('/home/rpi/Documents/knowledgetree/sounds/smartie/smartie.wav')
         elif blobArea>3000 and blobArea<5700 and blobAspect<0.5: #Tootsie roll
             print("Tootsie roll")
+            if mode == "normal":
+                play_sound_from_file('/home/rpi/Documents/knowledgetree/sounds/tootsie/tootsie.wav')
         else:
             print("Chocolate covered tree frog")
+            if mode == "normal":
+                play_unidentified_sound()
+                    
     #Display the images if we are running in test mode
     if mode == "test":
         # Show image in color window
@@ -149,44 +159,80 @@ def get_line_value(chip_path, line_offset):
         config={line_offset: gpiod.LineSettings(direction=Direction.INPUT,bias=Bias.PULL_UP)},
     ) as request:
         value = request.get_value(line_offset)
-        print("{}={}".format(line_offset, value))
+        #print("{}={}".format(line_offset, value))
         return value
     
 #*********************************************************************
 
 def play_idle_sound():
-    sound = pygame.mixer.Sound('/home/rpi/Documents/knowledgetree/sounds/snore_x.wav')
-    rnd_val = random.randint(1,3)
-    if rnd_val == 1:
-        sound = pygame.mixer.Sound('/home/rpi/Documents/knowledgetree/sounds/flush_y.wav')
-    elif rnd_val == 2:
-        sound = pygame.mixer.Sound('/home/rpi/Documents/knowledgetree/sounds/ufo_x.wav')
-    
+    wav_file_list = glob.glob('/home/rpi/Documents/knowledgetree/sounds/idle/*.wav')
+    num_wavs = len(wav_file_list)
+    sound = pygame.mixer.Sound('/home/rpi/Documents/knowledgetree/sounds/idle/snore_x.wav')
+    if num_wavs > 1:
+        rnd_val = random.randint(0,num_wavs-1)
+        print(wav_file_list[rnd_val])
+        sound = pygame.mixer.Sound(wav_file_list[rnd_val])
+            
     playing = sound.play()
     while playing.get_busy():
         pygame.time.delay(10)
         
 #*********************************************************************
 
+def play_unidentified_sound():
+    wav_file_list = glob.glob('/home/rpi/Documents/knowledgetree/sounds/unidentified/*.wav')
+    num_wavs = len(wav_file_list)
+    if num_wavs > 1:
+        rnd_val = random.randint(0,num_wavs-1)
+        print(wav_file_list[rnd_val])
+        play_sound_from_file(wav_file_list[rnd_val])
+    else:
+        print("Error in play_unidentified_sound")
+        
+#*********************************************************************
+
+def play_begin_sound():
+    wav_file_list = glob.glob('/home/rpi/Documents/knowledgetree/sounds/begin/*.wav')
+    num_wavs = len(wav_file_list)
+    if num_wavs > 1:
+        rnd_val = random.randint(0,num_wavs-1)
+        print(wav_file_list[rnd_val])
+        play_sound_from_file(wav_file_list[rnd_val])
+    else:
+        print("Error in play_begin_soundplay_begin_soundplay_begin_sound")
+    
+        
+#*********************************************************************
+
+def play_sound_from_file(sound_file_path):
+    try:
+        sound = pygame.mixer.Sound(sound_file_path)        
+        playing = sound.play()
+        while playing.get_busy():
+            pygame.time.delay(10)
+    except OSError as ex:
+        print(ex, "\n Error in play_sound_from_file")    
+#*********************************************************************
+
 if __name__ == "__main__":
     try:
-        pygame.mixer.init()
-        
+        pygame.mixer.init(buffer=4096)
+        play_idle_sound()
         if mode == "normal":
-            play_idle_sound()  #Testing
             #Begin polling for a button press
             while True:
-                num_loops=600
+                num_loops=1500
                 for i in range(num_loops):
                     btn_state = get_line_value("/dev/gpiochip0", 17)
                     if btn_state == Value.INACTIVE:
                         print("Button pressed")
+                        play_begin_sound()
                         run_normal_mode()
                         i=0
                     #endif        
                     time.sleep(0.1)
                 #end for
-                play_idle_sound()
+                #play_idle_sound() #Note: This is optional. It will play a random sound effect every 2 minutes.
             #end while
         elif mode == "test": #Data collection & testing mode
             run_test_mode()
